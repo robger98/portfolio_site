@@ -1,13 +1,19 @@
-from langchain_ollama import ChatOllama
-from langchain.chains.history_aware_retriever import create_history_aware_retriever
+from langchain_openai import ChatOpenAI
+# from langchain.chains.history_aware_retriever import create_history_aware_retriever
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage
 from rich import print
 from typing import List
-
+import getpass
+import os
 from .data_model.models import Message
 
-llm = ChatOllama(model="llama3.1:latest")
+if "OPENAI_API_KEY" not in os.environ:
+    os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt="Enter your OpenAI API key: ")
+
+llm = ChatOpenAI(
+    model="gpt-4o-mini"
+)
 
 def convert_to_langchain_msg_types(chat_history: List[Message]):
     output = []

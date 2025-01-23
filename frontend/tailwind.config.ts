@@ -12,12 +12,9 @@ export default {
 
 	theme: {
 		extend: {
-			// fontFamily: {
-			// 	sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-			// 	serif: ['Merriweather', 'ui-serif', 'Georgia'],
-			// 	mono: ['Menlo', 'ui-monospace', 'Monaco'],
-			// 	altehaas: ['AlteHaasGrotesk'],
-			// },
+			fontFamily: {
+				altehaas: ['AlteHaasGrotesk'],
+			},
 		}
 	},
 

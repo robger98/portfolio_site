@@ -1,3 +1,6 @@
-fastapi
+fastapi[standard]
 uvicorn
 pydantic
+langchain
+langchain-openai
+rich

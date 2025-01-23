@@ -60,9 +60,7 @@
 
 {@render children()}
 
-
-
-<div class="footer footer-center p-10 mt-10 border-t">
+<div class="footer footer-center p-10 border-t">
 	<div class="grid grid-cols-2 md:flex text-2xl">
 		<a href="/" class="btn btn-ghost normal-case text-2xl">Home</a>
 		<a href="/projects" class="btn btn-ghost normal-case text-2xl">Projects</a>

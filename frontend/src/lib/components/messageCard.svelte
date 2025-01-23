@@ -57,7 +57,7 @@
                     />     
                     <div class="h-4"></div>
                 {:else} 
-                    <Markdown source={split[2]}></Markdown>
+                <div class="md-container"><Markdown source={split[2]}></Markdown></div>
                 {/if}
             {/each}
         </div>

@@ -2,10 +2,14 @@
     import { getMessagesMessagesGet, sendSendPost, client } from "$lib/client/sdk.gen";
     import type { Message } from "$lib/client/types.gen";
     import MessageCard from "$lib/components/messageCard.svelte";
+    import Markdown from '@magidoc/plugin-svelte-marked'
+    import AboutMD from './about.md?raw';
+	import { onMount } from "svelte";
 
     let inputMessage = $state('');
     let messages: Message[] = $state<Message[]>([])
-    
+    let element: HTMLDivElement | null = null;
+    let drawertoggle: HTMLInputElement | null = null;
     client.setConfig({baseUrl:'http://localhost:8000'});
 
     async function handleSubmit(event: KeyboardEvent) {
@@ -39,15 +43,46 @@
         }
     }
     
+    $effect(() => {const m = messages; scrollToBottom(element);})
+
+    const scrollToBottom = async (node: any) => {
+        if (!node) return;
+        // node.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
+    }; 
+
+    onMount((async () => {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        drawertoggle?.click();
+    }));
+
 </script>
 
 
 
-<div class="h-[calc(100lvh-64px)] w-full flex flex-col justify-between main-content">
-    <div class="chatarea card h-full border w-full overflow-auto mb-4 mt-4 p-2 grow">
-        {#each messages as message}
-            <MessageCard role={message.role} content={message.content}/>
-        {/each}
+
+<div class="drawer">
+    <input id="my-drawer-2" type="checkbox" class="drawer-toggle" bind:this={drawertoggle}/>
+    <div class="drawer-content place-items-center">
+        <label for="my-drawer-2" class="btn btn-ghost h-4">About</label>
+        <div class="h-[calc(100lvh-112px)] w-full flex flex-col justify-between main-content">
+            <div class="chatarea card h-full border w-full overflow-auto mb-4 p-2 grow" bind:this={element}>
+                {#each messages as message}
+                    <MessageCard role={message.role} content={message.content}/>
+                {/each}
+            </div>
+            <div class="card w-full border mb-4">
+                <textarea class='autogrow-textarea textarea' placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
+            </div>
+        </div>
     </div>
-    <textarea class='autogrow-textarea bg-base-200 mb-4' placeholder="Say Hi!" bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
-</div>
+    <div class="drawer-side">
+        <div class="max-w-[80%] lg:max-w-[614px] bg-base-200 absolute min-h-[calc(100lvh-64px)] top-[64px] p-2 flex flex-col">
+            <div class="md-container"><Markdown source={AboutMD}/></div>
+            <br/>
+            
+            <label for="my-drawer-2" aria-label="close sidebar" class="btn bg-base-300 justify-self-center">Get Chatting!</label>
+        </div>
+        <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay bg-transparent -z-10"></label>
+    </div>
+    </div>
