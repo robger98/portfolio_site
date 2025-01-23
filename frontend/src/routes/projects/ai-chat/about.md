@@ -8,7 +8,9 @@ This chat utilizes OpenAI's gpt4o-mini.
 <br/><br/>
 
 #### Backend
-The backend is fairly simple, with only a single POST route for
+SvelteKit + FastAPI
+<br/><br/>
+For messsage handling, I am using Python with FastAPI. The API is simple, with only a single POST route for
 sending messages to the backend. The entire chat history is sent 
 in the request message since this example is running without any 
 database for storing different chat histories or chat sessions.
