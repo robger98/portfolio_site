@@ -2,8 +2,6 @@ import containerQueries from '@tailwindcss/container-queries';
 import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
 import daisyui from "daisyui"
-import AlteHaasGroteskBold from '$lib/fonts/alte_haas_grotesk/AlteHaasGroteskBold.ttf';
-import AlteHaasGroteskRegular from '$lib/fonts/alte_haas_grotesk/AlteHaasGroteskRegular.ttf';
 import type { Config } from 'tailwindcss';
 
 export default {
@@ -22,8 +20,12 @@ export default {
 
 	plugins: [typography, forms, containerQueries, daisyui],
 	daisyui: {
-		themes: [
-			"black","light", "business", "luxury"
-		]
+		themes: ["lofi", "black"],
+		base: true,
+		style: true,
+		utils: true,
+		prefix: "",
+		logs: true,
+		themeRoot: ":root",
 	}
 } satisfies Config;

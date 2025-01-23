@@ -32,15 +32,21 @@
 
 <div class="relative h-screen w-full grid grid-cols-1">
     <canvas id="splash" class="absolute top-0 left-0 right-0 bottom-0 z-40"></canvas>
-    <div class="p-4  absolute left-0 right-0 self-center justify-self-center flex flex-col items-center z-50">
+    <div class="p-4  absolute left-0 right-0 self-center justify-self-center flex flex-col items-center z-50 text-white">
         <span class="text-4xl md:text-6xl lg:text-8xl font-bold font-altehaas text-center">Robert Geraghty</span>
-        <span class="text-2xl font-altehaas text-center">Data Scientist</span>
+        <span class="text-2xl md:text-4xl text-center font-altehaas">Data Scientist</span>
+        <div class="h-4 flex">
+            <a href="/" class="btn btn-ghost normal-case text-xl font-altehaas">Home</a>
+            <a href="/projects" class="btn btn-ghost normal-case text-xl font-altehaas">Projects</a>
+            <a href="/blog" class="btn btn-ghost normal-case text-xl font-altehaas">Blog</a>
+            <a href="/contact" class="btn btn-ghost normal-case text-xl font-altehaas">Contact</a>
+        </div>
     </div>
-    <ChevronDown class="text-4xl absolute bottom-0 mb-0 left-0 right-0 self-center justify-self-center animate-bounce" style="color: white;"/>   
+    <ChevronDown class="text-6xl absolute bottom-0 mb-0 left-0 right-0 self-center justify-self-center animate-bounce z-50" style="color: white;"/>   
 </div>
 
 <div class="flex flex-col items-center">
-    <div class="h-40"></div>
+    <div class="h-24"></div>
     <div class="p-4 flex flex-col items-center max-w-[1140px]">
         <img src={headshot} width="560" height="560" alt="Robert Geraghty" class="rounded-full w-32 h-32 md:w-64 md:h-64 mb-3" style="object-fit: cover;"/>
         <h1 class="font-bold text-2xl font-altehaas text-center mb-2">Hello!</h1>
@@ -53,7 +59,7 @@
             sagittis est at volutpat.
         </p>
         <div class="divider"></div>
-        <div class="card shadow-lg rounded-lg bg-base-300">
+        <div class="card shadow-lg rounded-lg border">
             <h2 class="card-title pl-2 pt-2"> Skills</h2>
             <ul class="card-body list-disc text-justify">
                 <li>Maecenas tristique felis eget aliquet sodales.</li>

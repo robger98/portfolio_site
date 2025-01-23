@@ -18,3 +18,13 @@
     font-family: RoutedGothic;
     src: url('lib/fonts/routed-gothic-ttf-v1.0.0/routed-gothic.ttf') format('truetype');
 }
+
+h1 {
+    font-family: AlteHaasGrotesk;
+}
+
+.autogrow-textarea {
+  field-sizing: content;
+  min-height: 2lh;
+  max-height: 30lh;
+}
