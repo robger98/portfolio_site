@@ -47,9 +47,20 @@
 	{#if draw}
 		<div class="navbar w-full flex justify-between h-16 border-t border-b fixed bg-inherit z-30">
 			<div class="w-full flex justify-evenly">
-				<button class="btn btn-ghost absolute left-0">
+				<details class="dropdown absolute left-0">
+					<summary class="btn btn-ghost">
+						<Menu class="" style="font-size: xx-large;"/>
+					</summary>
+					<ul class="menu absolute left-0 top-16 p-2 shadow bg-base-100 rounded-box w-52">
+						<li><a href="/">Home</a></li>
+						<li><a href="/projects">Projects</a></li>
+						<li><a href="/blog">Blog</a></li>
+						<li><a href="/contact">Contact</a></li>
+					</ul>
+				</details>
+				<!-- <button class="btn btn-ghost absolute left-0">
 					<Menu class="" style="font-size: xx-large;"/>
-				</button>
+				</button> -->
 				<a class="text-xl md:text-4xl font-altehaas text-center" href="/">Robert Geraghty</a>
 			</div>
 			<!-- <div class="dropdown">
@@ -66,6 +77,12 @@
 	{/if}
 
 {@render children()}
+
+<div class="footer footer-center p-10 bg-base-300 text-base-content">
+	<div>
+		<p>Copyright © 2023 - All right reserved</p>
+	</div>
+</div>
 
 </div>
 
