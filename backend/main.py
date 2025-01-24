@@ -1,8 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 from rich import print
 
 from backend.data_model.models import Message
@@ -11,9 +10,7 @@ from . import llm_manager
 app = FastAPI()
 
 origins = [
-    "http://localhost:8080",
-    "http://localhost:5173",
-    "localhost:8080",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
