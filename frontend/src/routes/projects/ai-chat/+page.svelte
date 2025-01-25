@@ -10,7 +10,7 @@
     let messages: Message[] = $state<Message[]>([])
     let element: HTMLDivElement | null = null;
     let drawertoggle: HTMLInputElement | null = null;
-    client.setConfig({baseUrl:'http://localhost:8000'});
+    client.setConfig({baseUrl:'https://portfolio-site-backend-1042877629487.us-central1.run.app'});
 
     async function handleSubmit(event: KeyboardEvent) {
         // if ((Date.now() - lastMessageTime) < 500) {

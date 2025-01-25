@@ -11,6 +11,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
+    "https://portfolio-site-backend-1042877629487.us-central1.run.app"
 ]
 
 
