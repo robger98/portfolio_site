@@ -73,7 +73,6 @@
 		</div>
 	{/if}
 	
-
 {@render children()}
 
 {#if !(page.url.pathname === '/projects/ai-chat')}

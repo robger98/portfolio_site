@@ -60,9 +60,9 @@
 
 
 
-<div class="drawer absolute h-dvh top-0">
+<div class="drawer absolute top-0 left-0 right-0 bottom-0 flex flex-col">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" bind:this={drawertoggle}/>
-    <div class="h-screen flex flex-col drawer-content place-items-center mb-4 mr-4 ml-4">
+    <div class="h-full flex flex-col drawer-content place-items-center mr-4 ml-4">
         <div class='h-16'></div>
         <label for="my-drawer-2" class="btn btn-ghost">About</label>
         <div class="w-full flex flex-col justify-between main-content grow">
