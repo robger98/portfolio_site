@@ -4,22 +4,21 @@
     import MessageCard from "$lib/components/messageCard.svelte";
     import Markdown from '@magidoc/plugin-svelte-marked'
     import AboutMD from './about.md?raw';
-	import { onMount } from "svelte";
+    import { onMount } from "svelte";
 
+    let { data }= $props();
     let inputMessage = $state('');
     let messages: Message[] = $state<Message[]>([])
     let element: HTMLDivElement | null = null;
     let drawertoggle: HTMLInputElement | null = null;
-    client.setConfig({baseUrl:'http://localhost:8000'});
+    client.setConfig({baseUrl:data.API_URL});
 
     async function handleSubmit(event: KeyboardEvent) {
         // if ((Date.now() - lastMessageTime) < 500) {
         //     return;
         // }
         // lastMessageTime = Date.now();
-        console.log(event);
         if (event.key === 'Enter' && !event.shiftKey && inputMessage.trim()) {
-            console.log('Sending message:', inputMessage);
             const newMessage: Message = {
                 role: 'user',
                 content: inputMessage
@@ -77,7 +76,7 @@
         </div>
     </div>
     <div class="drawer-side">
-        <div class="max-w-[80%] lg:max-w-[614px] bg-base-200 absolute min-h-[calc(100lvh-64px)] top-[64px] p-2 flex flex-col">
+        <div class="max-w-[80%] lg:max-w-[614px] bg-base-200 absolute min-h-[calc(100lvh-64px)] max-h-[calc(100lvh-64px)] overflow-auto top-[64px] p-2 flex flex-col">
             <div class="md-container"><Markdown source={AboutMD}/></div>
             <br/>
             

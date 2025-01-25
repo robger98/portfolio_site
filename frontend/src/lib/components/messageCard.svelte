@@ -32,8 +32,6 @@
         return result;
     }
     onMount(async () => {
-        // compiledContent = await compile(content)
-        // console.log(compiledContent)
     })
 
 </script>
@@ -48,7 +46,6 @@
     {:else}
         <div class="">
             {#each splits as split}
-                {console.log(split)}
                 {#if split[0]}
                     <CodeBlock
                         language={split[1]}
@@ -64,16 +61,3 @@
     {/if}
 </div>
 
-<!-- <div class={(role == 'user'? 'justify-self-end' : 'justify-self-start') + 'max-w-[75%]'}>
-    <p class={(role == 'user'? 'justify-self-end' : 'justify-self-start')}>{role}</p>
-    <div class={(role == 'user'? 'bg-slate-200 justify-self-end' : 'justify-self-start') + 'rounded-lg w-fit max-w-full p-4'}>
-        {#each splits as split }
-            {console.log(split)} -->
-            <!-- {#if split[0]} -->
-                <!-- <markdo language={split[1]} code={split[2]} lineNumbers></CodeBlock> -->
-            <!-- {:else} -->
-                <!-- <Markdown source={split[2]}></Markdown> -->
-            <!-- {/if} -->
-        <!-- {/each} -->
-    <!-- </div> -->
-<!-- </div> -->
