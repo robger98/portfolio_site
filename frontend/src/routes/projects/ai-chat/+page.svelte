@@ -10,7 +10,7 @@
     let messages: Message[] = $state<Message[]>([])
     let element: HTMLDivElement | null = null;
     let drawertoggle: HTMLInputElement | null = null;
-    client.setConfig({baseUrl:'https://portfolio-site-backend-1042877629487.us-central1.run.app'});
+    client.setConfig({baseUrl:'http://localhost:8000'});
 
     async function handleSubmit(event: KeyboardEvent) {
         // if ((Date.now() - lastMessageTime) < 500) {
@@ -63,15 +63,15 @@
 
 <div class="drawer">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" bind:this={drawertoggle}/>
-    <div class="drawer-content place-items-center">
-        <label for="my-drawer-2" class="btn btn-ghost h-4">About</label>
-        <div class="h-[calc(100lvh-112px)] w-full flex flex-col justify-between main-content">
-            <div class="chatarea card h-full border w-full overflow-auto mb-4 p-2 grow" bind:this={element}>
+    <div class="h-[calc(100lvh- 80px)] flex flex-col drawer-content place-items-center mb-4 mr-4 ml-4">
+        <label for="my-drawer-2" class="btn btn-ghost">About</label>
+        <div class="w-full flex flex-col justify-between main-content grow">
+            <div class="card h-full border w-full overflow-auto mb-4 p-2" bind:this={element}>
                 {#each messages as message}
                     <MessageCard role={message.role} content={message.content}/>
                 {/each}
             </div>
-            <div class="card w-full border mb-4">
+            <div class="card w-full border">
                 <textarea class='autogrow-textarea textarea' placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
             </div>
         </div>

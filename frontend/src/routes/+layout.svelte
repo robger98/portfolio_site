@@ -10,8 +10,21 @@
 	let {children } = $props();
 	// let { data } = $props();
 	let draw = $state(false)
+	// let theme_controller: HTMLInputElement | undefined = $state()
+	// let theme = $state()
+	let openDropdown: boolean = $state(false)
+  
+	function handleClickItem() {
+		// close it
+		openDropdown = false
+	}
 
-	
+	async function handleOnFocusOut() {
+		await new Promise( resolve => setTimeout(resolve, 100))
+		openDropdown = false
+	}
+
+
 
 	onMount(() => {
 		if (page.route.id === "/") {
@@ -30,26 +43,29 @@
 
 <div>
 	{#if draw}
-		<div class="navbar w-full flex justify-between h-16 border-t border-b fixed top-0 bg-base-100 z-30">
-			<div class="w-full flex justify-evenly">
-				<details class="dropdown absolute left-0 ml-4">
-					<summary class="btn btn-ghost">
-						<Menu class="" style="font-size: xx-large;"/>
+		<div class="navbar w-full flex h-16 justify-between border-t border-b fixed top-0 bg-base-100 z-30">
+			<div class="w-full flex justify-between align-middle">
+				<details class="group dropdown ml-2" bind:open={openDropdown} onfocusout={handleOnFocusOut}>
+					<summary class="btn btn-ghost p-0">
+						<Menu class="text-xl"/>
 					</summary>
-					<ul class="menu absolute left-0 top-16 p-2 shadow bg-base-100 rounded-box w-52">
-						<li><a href="/">Home</a></li>
-						<li><a href="/projects">Projects</a></li>
-						<li><a href="/blog">Blog</a></li>
-						<li><a href="/contact">Contact</a></li>
+					<ul class="menu border absolute top-[64px] m-0 p-0 shadow bg-base-100 w-52">
+						<li><a href="/" onclick={handleClickItem}>Home</a></li>
+						<li><a href="/projects" onclick={handleClickItem}>Projects</a></li>
+						<li><a href="/blog" onclick={handleClickItem}>Blog</a></li>
+						<li><a href="/contact" onclick={handleClickItem}>Contact</a></li>
 					</ul>
 				</details>
-				<h1 class="text-2xl font-bold"><a href="/">Robert Geraghty</a></h1>
-				<div class="absolute right-4">
-					<label class="flex cursor-pointer gap-2">
-						<Sun/>
-						<input type="checkbox" value="black" class="toggle theme-controller" />
-						<Moon/>
-					  </label>
+				<h1 class="text-xl font-bold"><a href="/">Robert Geraghty</a></h1>
+				<div class="flex mr-2">
+					<label class="swap swap-rotate self-center">
+						<!-- this hidden checkbox controls the state -->
+						<input type="checkbox" class="theme-controller hidden" value="black" />
+						<!-- sun icon -->
+						<Sun class="swap-on fill-current text-xl"/>
+						<!-- moon icon -->
+						<Moon class="swap-off fill-current text-xl"/>
+					</label	>
 				</div>	
 				  
 				<!-- <input type="checkbox" value="black" class="toggle theme-controller absolute right-0 mr-4" /> -->
@@ -60,17 +76,20 @@
 
 {@render children()}
 
-<div class="footer footer-center p-10 border-t">
-	<div class="grid grid-cols-2 md:flex text-2xl">
-		<a href="/" class="btn btn-ghost normal-case text-2xl">Home</a>
-		<a href="/projects" class="btn btn-ghost normal-case text-2xl">Projects</a>
-		<a href="/blog" class="btn btn-ghost normal-case text-2xl">Blog</a>
-		<a href="/contact" class="btn btn-ghost normal-case text-2xl">Contact</a>
+{#if !(page.url.pathname === '/projects/ai-chat')}
+	<div class="footer footer-center p-10 border-t">
+		<div class="grid grid-cols-2 md:flex text-2xl">
+			<a href="/" class="btn btn-ghost normal-case text-2xl">Home</a>
+			<a href="/projects" class="btn btn-ghost normal-case text-2xl">Projects</a>
+			<a href="/blog" class="btn btn-ghost normal-case text-2xl">Blog</a>
+			<a href="/contact" class="btn btn-ghost normal-case text-2xl">Contact</a>
+		</div>
+		<div>
+			<p>Copyright © 2025 - All right reserved</p>
+		</div>
 	</div>
-	<div>
-		<p>Copyright © 2025 - All right reserved</p>
-	</div>
-</div>
 
+	
+{/if}
 </div>
 
