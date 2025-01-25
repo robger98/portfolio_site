@@ -43,7 +43,7 @@
 
 <div>
 	{#if draw}
-		<div class="navbar w-full flex h-16 justify-between border-t border-b fixed top-0 bg-base-100 z-30">
+		<div class="navbar w-full flex min-h-16 ax-h-16 h-16 justify-between border-t border-b fixed top-0 bg-base-100 z-30">
 			<div class="w-full flex justify-between align-middle">
 				<details class="group dropdown ml-2" bind:open={openDropdown} onfocusout={handleOnFocusOut}>
 					<summary class="btn btn-ghost p-0">

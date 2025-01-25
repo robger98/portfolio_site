@@ -60,9 +60,10 @@
 
 
 
-<div class="drawer">
+<div class="drawer absolute h-screen top-0">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" bind:this={drawertoggle}/>
-    <div class="h-[calc(100lvh-80px)] flex flex-col drawer-content place-items-center mb-4 mr-4 ml-4">
+    <div class="h-screen flex flex-col drawer-content place-items-center mb-4 mr-4 ml-4">
+        <div class='h-16'></div>
         <label for="my-drawer-2" class="btn btn-ghost">About</label>
         <div class="w-full flex flex-col justify-between main-content grow">
             <div class="card h-full border w-full overflow-auto mb-4 p-2" bind:this={element}>
@@ -70,7 +71,7 @@
                     <MessageCard role={message.role} content={message.content}/>
                 {/each}
             </div>
-            <div class="card w-full border">
+            <div class="card w-full border mb-4">
                 <textarea class='autogrow-textarea textarea' placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
             </div>
         </div>
@@ -84,4 +85,4 @@
         </div>
         <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay bg-transparent -z-10"></label>
     </div>
-    </div>
+</div>
