@@ -63,7 +63,7 @@
 
 <div class="drawer">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" bind:this={drawertoggle}/>
-    <div class="h-[calc(100lvh- 80px)] flex flex-col drawer-content place-items-center mb-4 mr-4 ml-4">
+    <div class="h-[calc(100lvh-80px)] flex flex-col drawer-content place-items-center mb-4 mr-4 ml-4">
         <label for="my-drawer-2" class="btn btn-ghost">About</label>
         <div class="w-full flex flex-col justify-between main-content grow">
             <div class="card h-full border w-full overflow-auto mb-4 p-2" bind:this={element}>
