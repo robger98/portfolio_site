@@ -65,7 +65,7 @@
     <div class="h-full flex flex-col drawer-content place-items-center mr-4 ml-4">
         <div class='h-16'></div>
         <label for="my-drawer-2" class="btn btn-ghost">About</label>
-        <div class="w-full flex flex-col justify-between main-content grow">
+        <div class="w-full flex flex-col justify-between main-content max-h-full overflow-auto grow">
             <div class="card h-full border w-full overflow-auto mb-4 p-2" bind:this={element}>
                 {#each messages as message}
                     <MessageCard role={message.role} content={message.content}/>
