@@ -3,7 +3,7 @@
     import { ThpaceGL } from "thpace";
 
     import ChevronDown from '~icons/lucide/chevron-down'
-    import headshot from '$lib/assets/headshot.jfif'
+    // import headshot from '$lib/assets/headshot.jfif'
     
 
     onMount(() => {
@@ -48,7 +48,7 @@
 <div class="flex flex-col items-center">
     <div class="h-24"></div>
     <div class="p-4 flex flex-col items-center main-content">
-        <img src={headshot} width="560" height="560" alt="Robert Geraghty" class="rounded-full w-32 h-32 md:w-64 md:h-64 mb-3" style="object-fit: cover;"/>
+        <img src={"/headshot.jfif"} width="560" height="560" alt="Robert Geraghty" class="rounded-full w-32 h-32 md:w-64 md:h-64 mb-3" style="object-fit: cover;"/>
         <h1 class="font-bold text-2xl font-altehaas text-center mb-2">Hello!</h1>
         <p class="text-justify">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. 

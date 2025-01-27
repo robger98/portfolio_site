@@ -2,7 +2,6 @@
 
 
     let { data } = $props();
-    let grid_def = $state();
 
 </script>
 
