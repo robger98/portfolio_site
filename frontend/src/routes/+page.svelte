@@ -34,7 +34,7 @@
 
 </script>
 
-<div class="relative h-screen w-full grid grid-cols-1">
+<div class="relative h-dvh w-full grid grid-cols-1">
     <canvas id="splash" class="absolute top-0 left-0 right-0 bottom-0 z-40"></canvas>
     <div class="p-4  absolute left-0 right-0 self-center justify-self-center flex flex-col items-center z-50 text-white">
         <span class="text-4xl md:text-6xl lg:text-8xl font-bold font-altehaas text-center">Robert Geraghty</span>
