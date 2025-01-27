@@ -1,6 +1,9 @@
 ## AI Chat Interface
-
 This is a simple AI chat interface that I used to familiarize myself with Sveltekit and FastAPI.
+<br/><br/>
+
+#### Usage
+Simply type a message and press enter to submit!
 <br/><br/>
 
 #### Model

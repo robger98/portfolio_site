@@ -72,16 +72,18 @@
                 {/each}
             </div>
             <div class="card w-full border border-base-300 mb-4">
-                <textarea class='autogrow-textarea textarea' placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
+                <textarea class='autogrow-textarea textarea' autocomplete="off" placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
             </div>
         </div>
     </div>
     <div class="drawer-side">
         <div class="max-w-[80%] lg:max-w-[614px] bg-base-200 absolute min-h-[calc(100lvh-64px)] max-h-[calc(100lvh-64px)] overflow-auto top-[64px] p-2 flex flex-col">
+            <label for="my-drawer-2" aria-label="close sidebar" class="btn bg-base-300 rounded border-none justify-self-center">Too busy to read? Click me to get chatting!</label>
+            <br/>
             <div class="md-container"><Markdown source={AboutMD}/></div>
             <br/>
-            
-            <label for="my-drawer-2" aria-label="close sidebar" class="btn bg-base-300 justify-self-center">Get Chatting!</label>
+            <label for="my-drawer-2" aria-label="close sidebar" class="btn bg-base-300 rounded border-none justify-self-center">Phew, lots of reading, let's get chatting!</label>
+            <br/>
         </div>
         <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay bg-transparent -z-10"></label>
     </div>

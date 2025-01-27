@@ -12,6 +12,8 @@
 #### Web Development
 - Svelte, SvelteKit, TypeScript
 - NiceGUI, Streamlit, FastAPI, Flask 
+#### Cloud Platforms
+- Google Cloud Platform, Snowflake
 #### Other Tools
 - Docker
 - Microsoft Excel

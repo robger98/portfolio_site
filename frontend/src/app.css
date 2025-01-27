@@ -76,6 +76,11 @@
     margin-bottom: 0.5rem;
 }
 
+.md-container a{
+    color: #007bff;
+    text-decoration: underline;
+}
+
 .md-container ul{
     margin-top: 0.5rem;
     margin-left: 1rem;
