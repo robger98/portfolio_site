@@ -54,16 +54,16 @@
     <div class="p-4 flex flex-col items-center main-content">
         <img src={"/headshot.jfif"} width="560" height="560" alt="Robert Geraghty" class="rounded-full w-32 h-32 md:w-64 md:h-64 mb-3" style="object-fit: cover;"/>
         <h1 class="font-bold text-2xl font-altehaas text-center mb-2">Hello!</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 mt-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 mt-4 gap-4 max-w-full">
             <div class="card rounded-none border md-container p-4 md:col-span-2">
                 <h2 class="card-title pt-2"> About Me</h2>
                 <Markdown source={AboutMe}></Markdown>
             </div>
-            <div class="card rounded-none border md-container min-w-full p-4">
+            <div class="card rounded-none border md-container col-span-1 p-4">
                 <h2 class="card-title pt-2"> Skills</h2>
                 <Markdown source={Skills}></Markdown>
             </div>
-            <div class="card rounded-none border md-container min-w-full p-4">
+            <div class="card rounded-none border md-container col-span-1 p-4">
                 <h2 class="card-title pt-2"> Technologies</h2>
                 <Markdown source={Technologies}></Markdown>
             </div>
