@@ -64,14 +64,14 @@
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" bind:this={drawertoggle}/>
     <div class="h-full flex flex-col drawer-content place-items-center mr-4 ml-4">
         <div class='h-16'></div>
-        <label for="my-drawer-2" class="btn btn-ghost">About</label>
+        <label for="my-drawer-2" class="btn btn-ghost mt-1">About</label>
         <div class="w-full flex flex-col justify-between main-content max-h-full overflow-auto grow">
-            <div class="card h-full border w-full overflow-auto mb-4 p-2" bind:this={element}>
+            <div class="card h-full border border-base-300 w-full overflow-auto mb-4 p-2" bind:this={element}>
                 {#each messages as message}
                     <MessageCard role={message.role} content={message.content}/>
                 {/each}
             </div>
-            <div class="card w-full border mb-4">
+            <div class="card w-full border border-base-300 mb-4">
                 <textarea class='autogrow-textarea textarea' placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
             </div>
         </div>

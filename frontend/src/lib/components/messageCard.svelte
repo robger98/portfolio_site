@@ -38,7 +38,7 @@
 <!-- <p class={(role == 'user'? 'justify-self-end mb-1' : 'justify-self-start mb-1')}>
     {displayRole}
 </p> -->
-<div class={((role === "user")? " self-end " : " self-start ") + " card bg-base-200 rounded-lg pt-1 pb-1 pr-2 pl-2 max-w-[80%] mb-2 "}>
+<div class={((role === "user")? "self-end  bg-accent text-accent-content" : "self-start bg-base-300") + " card rounded-lg pt-1 pb-1 pr-2 pl-2 max-w-[80%] mb-2 "}>
     {#if role == 'user'}
         <!-- <div class="card border pt-1 pb-1 pr-2 pl-2 max-w-[80%]"> -->
             <p>{content}</p>

@@ -1,14 +1,12 @@
-- Strategy and Approach Development
-- Critical Thinking & Research
-  - Problem Solving, Pattern Recognition, Analysis
-- Software Development
-- Data Visualization
-- Research:
-  - Literature Reviews, Market Analysis, Competitive Intelligence
-- Data cataloging and labeling
-- Adversarial prompt engineering
-- Curriculum Development & Teaching
-- Communication:
-  - Written, Visual, Presentations, Publications
+#### Data Modelling
+- Supervised, Unsupervised, Semi-supervised and Reinforcement Learning
+- Model finetuning
 - Statistical Analysis
-- Agile & Scrum Methodology
+#### Data Collection & Creation
+- Webscraping
+- Structured & Unstructured Data
+- Synthetic Data Generation
+#### Data Storage & Warehousing
+- MySQL, PostgreSQL, Snowflake, Minio
+- 
+#### Data Visualization

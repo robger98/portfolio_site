@@ -41,9 +41,9 @@
 
 </script>
 
-<div>
+<div class="min-h-dvh">
 	{#if draw}
-		<div class="navbar w-full flex min-h-16 ax-h-16 h-16 justify-between border-t border-b fixed top-0 bg-base-100 z-30">
+		<div class="navbar w-full flex min-h-16 ax-h-16 h-16 justify-between shadow-sm bg-base-100 border-t border-b border-base-300 fixed top-0 z-30">
 			<div class="w-full flex justify-between align-middle">
 				<details class="group dropdown ml-2" bind:open={openDropdown} onfocusout={handleOnFocusOut}>
 					<summary class="btn btn-ghost p-0">
@@ -76,7 +76,7 @@
 {@render children()}
 
 {#if !(page.url.pathname === '/projects/ai-chat')}
-	<div class="footer footer-center p-10 border-t">
+	<div class="footer footer-center p-10 border-t border-base-300">
 		<div class="grid grid-cols-2 md:flex text-2xl">
 			<a href="/" class="btn btn-ghost normal-case text-2xl">Home</a>
 			<a href="/projects" class="btn btn-ghost normal-case text-2xl">Projects</a>

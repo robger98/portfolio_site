@@ -27,5 +27,6 @@ export default {
 		prefix: "",
 		logs: true,
 		themeRoot: ":root",
-	}
+	}, 
+	darkMode: ['selector', '[data-theme="black"]'],
 } satisfies Config;

@@ -2,6 +2,7 @@
 - Python, R, SQL, C++, Java
 #### Data Science & ML Tools:
 - NumPy, Pandas, Scikit-learn, SciPy
+- SQLAlchemy, SQLModel
 - PyTorch, Tensorflow, Keras
 - LangChain, AutoGen
 - OpenAI API
@@ -11,3 +12,7 @@
 #### Web Development
 - Svelte, SvelteKit, TypeScript
 - NiceGUI, Streamlit, FastAPI, Flask 
+#### Other Tools
+- Docker
+- Microsoft Excel
+- LaTeX, Typst
