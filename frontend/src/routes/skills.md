@@ -1,0 +1,14 @@
+- Strategy and Approach Development
+- Critical Thinking & Research
+  - Problem Solving, Pattern Recognition, Analysis
+- Software Development
+- Data Visualization
+- Research:
+  - Literature Reviews, Market Analysis, Competitive Intelligence
+- Data cataloging and labeling
+- Adversarial prompt engineering
+- Curriculum Development & Teaching
+- Communication:
+  - Written, Visual, Presentations, Publications
+- Statistical Analysis
+- Agile & Scrum Methodology

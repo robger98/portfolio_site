@@ -1,5 +1,9 @@
 <script>
-	import { onMount } from "svelte";
+	import Markdown from "@magidoc/plugin-svelte-marked";
+    import AboutMe from './about_me.md?raw';
+    import Skills from  './skills.md?raw';
+    import Technologies from './technologies.md?raw';
+    import { onMount } from "svelte";
     import { ThpaceGL } from "thpace";
 
     import ChevronDown from '~icons/lucide/chevron-down'
@@ -46,33 +50,24 @@
 </div>
 
 <div class="flex flex-col items-center">
-    <div class="h-24"></div>
+    <div class="h-16"></div>
     <div class="p-4 flex flex-col items-center main-content">
         <img src={"/headshot.jfif"} width="560" height="560" alt="Robert Geraghty" class="rounded-full w-32 h-32 md:w-64 md:h-64 mb-3" style="object-fit: cover;"/>
         <h1 class="font-bold text-2xl font-altehaas text-center mb-2">Hello!</h1>
-        <p class="text-justify">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-            Cras a sodales eros. Aliquam malesuada eget sem in feugiat. Fusce 
-            malesuada egestas leo, et volutpat velit fermentum eget. Class 
-            aptent taciti sociosqu ad litora torquent per conubia nostra, per 
-            inceptos himenaeos. Sed sollicitudin rhoncus ultrices. Cras mattis 
-            sagittis est at volutpat.
-        </p>
-        <div class="divider"></div>
-        <div class="card shadow-lg rounded-lg border">
-            <h2 class="card-title pl-2 pt-2"> Skills</h2>
-            <ul class="card-body list-disc text-justify">
-                <li>Maecenas tristique felis eget aliquet sodales.</li>
-                <li>Maecenas ut felis egestas, hendrerit nisi id, sodales nulla.</li>
-                <li>Vivamus nec dolor vitae libero lacinia sollicitudin a et ex.</li>
-                <li>Mauris scelerisque metus a fermentum vestibulum.</li>
-                <li>Mauris et risus porta, egestas risus non, laoreet libero.</li>
-                <li>Donec nec diam porttitor risus posuere faucibus id in nisl.</li>
-            </ul>
-            
-        </div>
-        <!-- <div class="h-screen w-full"></div> -->
-        <!-- <span class="text-center"></span> -->
+        <div class="grid grid-cols-1 md:grid-cols-2 mt-4 gap-4">
+            <div class="card rounded-none border md-container p-4 md:col-span-2">
+                <h2 class="card-title pt-2"> About Me</h2>
+                <Markdown source={AboutMe}></Markdown>
+            </div>
+            <div class="card rounded-none border md-container min-w-full p-4">
+                <h2 class="card-title pt-2"> Skills</h2>
+                <Markdown source={Skills}></Markdown>
+            </div>
+            <div class="card rounded-none border md-container min-w-full p-4">
+                <h2 class="card-title pt-2"> Technologies</h2>
+                <Markdown source={Technologies}></Markdown>
+            </div>
+        </div>  
     </div>
 </div>
 
