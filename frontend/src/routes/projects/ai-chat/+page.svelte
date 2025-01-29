@@ -8,6 +8,7 @@
 
     let { data }= $props();
     let inputMessage = $state('');
+    let message_textarea: HTMLTextAreaElement | undefined= $state();
     let messages: Message[] = $state<Message[]>([])
     let element: HTMLDivElement | null = null;
     let drawertoggle: HTMLInputElement | null = null;
@@ -25,6 +26,9 @@
             };
             messages = [...messages, newMessage]
             await new Promise(resolve => setTimeout(resolve, 20)); // Force re-render
+            if (message_textarea){
+                message_textarea.blur();
+            }
             inputMessage = ''; // Clear input after sending
             try {
                 const response = await sendSendPost({
@@ -72,7 +76,7 @@
                 {/each}
             </div>
             <div class="card w-full border border-base-300 mb-4">
-                <textarea class='autogrow-textarea textarea' autocomplete="off" placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit}></textarea>
+                <textarea class='autogrow-textarea textarea' autocomplete="off" placeholder="Type here..." bind:value={inputMessage} onkeydown={handleSubmit} bind:this={message_textarea}></textarea>
             </div>
         </div>
     </div>
