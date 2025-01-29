@@ -290,7 +290,7 @@
         </div>
     </div>  
 
-    <div class="grid grid-cols-6 grid-rows-6 w-full grow gap-4 p-4 ">
+    <div class="grid grid-col-1 md:grid-cols-6 grid-rows-6 w-full grow gap-4 p-4 ">
         <div id="descriptive-stats" class="col-span-1 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
             <div class="flex flex-col">
                 <p>Average File Size: {computeAverageSize()} bytes</p>
