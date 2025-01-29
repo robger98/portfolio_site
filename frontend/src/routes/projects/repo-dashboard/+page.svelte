@@ -264,15 +264,17 @@
     })
 </script>
 
-<div id="page" class="w-full h-[calc(100dvh-64px)] max-h-[calc(100dvh-64px)] bg-base-300 flex flex-col">
-    <div class="top-bar bg-base-100 text-base-content p-2 w-full flex justify-between items-center pl-4 pr-4">
-        <div id="repo-branch-selection" class="flex items-center gap-4">
+<div id="page" class="w-full md:h-[calc(100dvh-64px)] md:max-h-[calc(100dvh-64px)] bg-base-300 flex flex-col">
+    <div class="top-bar bg-base-100 text-base-content p-2 w-full flex justify-between items-center place-content-center pl-4 pr-4">
+        <div id="repo-branch-selection" class="flex flex-col md:flex-row items-center md-container gap-4">
+            <h2 class="md:hidden text-center">Please note this dashboard is designed with desktops in mind</h2>
             <p>Enter public github repo information here:</p>
-            <div id="repo-info" class="flex items-center">
-                
-                <input type="text" id="account" bind:value={accountInput} onkeydown={disableReady} placeholder="Account Name" class="input input-sm border-none input-primary grow bg-base-300"/>
-                <div class="divider divider-horizontal">/</div>
-                    <input type="text" id="repo" bind:value={repoInput} onkeydown={disableReady} placeholder="Repo Name" class="input input-sm border-none input-primary grow bg-base-300"/>
+            <div id="repo-info" class="flex flex-col md:flex-row items-center max-w-full">
+                <div class="flex flex-col sm:flex-row items-center w-full sm:w-fit">
+                    <input type="text" id="account" bind:value={accountInput} onkeydown={disableReady} placeholder="Account Name" class="input input-sm border-none input-primary grow bg-base-300 w-full sm:w-fit"/>
+                    <div class="divider divider-horizontal w-full sm:w-fit">/</div>
+                    <input type="text" id="repo" bind:value={repoInput} onkeydown={disableReady} placeholder="Repo Name" class="input input-sm border-none input-primary grow bg-base-300 w-full sm:w-fit"/>
+                </div>
                 <button class="ml-4" onclick={async ()=> await get_branches()}><Search class=""/></button>
             </div>
             {#if branchesReady}
@@ -290,8 +292,8 @@
         </div>
     </div>  
 
-    <div class="grid grid-col-1 md:grid-cols-6 grid-rows-6 w-full grow gap-4 p-4 ">
-        <div id="descriptive-stats" class="col-span-1 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
+    <div class="flex flex-col md:grid md:grid-cols-6 md:grid-rows-6 w-full grow gap-4 p-4 ">
+        <div id="descriptive-stats" class="md:col-span-1 md:row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
             <div class="flex flex-col">
                 <p>Average File Size: {computeAverageSize()} bytes</p>
                 <p>Median File Size: {computeMedianSize()} bytes</p>
@@ -301,17 +303,17 @@
                 <p>Smallest Directory</p>
             </div>
         </div> 
-        <div id="file-list" class="col-span-1 row-start-3 row-span-4 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
+        <div id="file-list" class="nd:col-span-1 md:row-start-3 md:row-span-4 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
             <div class="flex flex-col">
                 <p>File List</p>
             </div>
         </div>
-        <div id="histogram" class="col-start-2 row-start-1 col-span-3 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
+        <div id="histogram" class="md:col-start-2 md:row-start-1 md:col-span-3 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
             <div class="flex flex-col place-items-center md-container">
-                <h1>UNDER CONSTRUCTION, if you can't tell...</h1>
+                <h2>Full functionality currently under construction</h2>
             </div>
         </div>
-        <div id="repo-viz" class="col-start-2 row-start-3 col-span-3 row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow ">
+        <div id="repo-viz" class="min-h-dvh md:col-start-2 md:row-start-3 md:col-span-3 md:row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow ">
             <div class="card-body">
                 <div class='card-title'>Repo Visualisation</div>
                 <div> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
@@ -320,7 +322,7 @@
                 
             </div>
         </div>
-        <div id="file_preview" class="col-span-2 row-span-6 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 max-w-full">
+        <div id="file_preview" class="md:col-span-2 md:row-span-6 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 max-w-full">
             {#if fileElement}
                 <FileInfo file={fileElement}/>
             {:else}
