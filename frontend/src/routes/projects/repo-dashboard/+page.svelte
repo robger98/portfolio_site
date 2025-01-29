@@ -221,7 +221,7 @@
                 .on('mouseout', function(event, d) {
                     d3.select(this).style('fill', 'blue');
                     svg.selectAll('text').filter(t => t === d)
-                        .style('opacity', 0);
+                        .style('opacity', t=> t.parent === packed ? 1 : 0);
                 })
 
             svg.selectAll('text')
@@ -233,9 +233,9 @@
                 .attr('text-anchor', 'middle')
                 .attr('dy', '0.3em')
                 .text(d => d.data.name || "/")
-                .style('font-size', d => Math.max(12, (2*d.r)/(d.data.name||'/').length) + 'px')
+                .style('font-size', d =>  (2*d.r)/(d.data.name||'/').length + 'px')
                 .style('fill', 'White')
-                .style('opacity', 0)
+                .style('opacity', d => d.parent === packed ? 1 : 0)
                 .style('pointer-events', 'none');
 
 
@@ -313,7 +313,7 @@
                 <h2>Full functionality currently under construction</h2>
             </div>
         </div>
-        <div id="repo-viz" class="min-h-dvh md:col-start-2 md:row-start-3 md:col-span-3 md:row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow ">
+        <div id="repo-viz" class="min-h-dvh md:min-h-0 md:col-start-2 md:row-start-3 md:col-span-3 md:row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow ">
             <div class="card-body">
                 <div class='card-title'>Repo Visualisation</div>
                 <div> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
