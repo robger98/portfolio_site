@@ -22,7 +22,7 @@ origins = [
     "http://localhost:5173",
     "https://portfolio-site-frontend-1042877629487.us-central1.run.app",
     "https://robertgeraghty.com",
-    "https://www.robertgeraghty.com",
+    "https://www.robertgeraghty.com"
 ]
 
 

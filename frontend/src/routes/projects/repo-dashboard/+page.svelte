@@ -308,7 +308,7 @@
         </div>
         <div id="histogram" class="col-start-2 row-start-1 col-span-3 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
             <div class="flex flex-col place-items-center md-container">
-                <h1>This is currently WIP</h1>
+                <h1>UNDER CONSTRUCTION, if you can't tell...</h1>
             </div>
         </div>
         <div id="repo-viz" class="col-start-2 row-start-3 col-span-3 row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow ">
