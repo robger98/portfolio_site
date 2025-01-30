@@ -7,6 +7,7 @@
         file: GitFile,
     } = $props();
 
+    // $inspect('file', file);
 
     // $effect(() => {
     //     if (file.content !== "Cannot Decode File") {
@@ -19,11 +20,11 @@
 
 </script>
 
-<div class="flex flex-col items-center max-h-full">
+<div class="flex flex-col items-center h-full">
     <h1 class="text-2xl font-bold">{file.name}</h1>
     <p class="text-sm text-gray-500">{file.path}</p>
     <p class="text-sm text-gray-500">{file.size}</p>
-    <div id="file-content" class="w-full h-full">
+    <div id="file-content" class="w-full grow max-h-full overflow-auto">
         {#key file.content}
             {#if file.content === "Cannot Decode File"}
                 <p>Cannot Decode File</p>

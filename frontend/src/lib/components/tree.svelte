@@ -6,18 +6,22 @@
     export type TreeItem = {
         name: string,
         type: string,
-        children: TreeItem[]
+        children: TreeItem[],
+        parent?: TreeItem
     }
 
     export function CreateTreeFromGitElement(GitElement: GitElement): TreeItem {
         let tree: TreeItem = {
             name: GitElement.name? GitElement.name : "",
             type: GitElement.is_dir? '_folder' : 'file',
-            children: []
+            children: [],
         }
+        tree.parent = tree
         if (GitElement.children) {
             for (let child of GitElement.children) {
-                tree.children.push(CreateTreeFromGitElement(child))
+                const child_tree = CreateTreeFromGitElement(child)
+                child_tree.parent = tree
+                tree.children.push(child_tree)
             }
         }
         tree.children.sort((a, b) => a.name.localeCompare(b.name));
@@ -47,11 +51,14 @@
     let is_clicked: boolean | undefined = $state(false);
 
     async function handleClick() {
-        if (tree.type === 'file') {
-            selection = tree;
-            return;
-        }
         is_clicked = !is_clicked;
+        if (is_clicked) {
+            selection = tree;
+        } else if (!(selection === tree)) {
+            selection = tree;
+        } else {
+            selection = tree.parent;
+        }
     }
 
     onMount(() => {
@@ -72,7 +79,7 @@
                     {/if}
                     <!-- <Folder class=""/> -->
                 {:else}
-                    <File class=""/>
+                    <File />
                 {/if}
                 <span class='ml-2'>
                 {tree.name? tree.name : tree.type === '_folder'? '/' : 'File'}
