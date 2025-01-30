@@ -11,11 +11,17 @@
         GitElement, 
         GitFile,
     } from "$lib/client/types.gen";
+    
+
     import Search from "~icons/lucide/search"
     import ArrowUp from "~icons/lucide/arrow-up"
 	import { onMount } from "svelte";
     import * as d3 from 'd3';
 	import { get } from "svelte/store";
+	import Tree from "$lib/components/tree.svelte";
+    import type { TreeItem } from "$lib/components/tree.svelte";
+    import { CreateTreeFromGitElement } from "$lib/components/tree.svelte";
+	import { on } from "svelte/events";
 
     let { data }= $props();
 
@@ -30,15 +36,21 @@
     let branches: string[] = $state(['main']);
     let repoBranch: string = $state('main');
 
-    let selectedNode: d3.HierarchyCircularNode<GitElement> | undefined = $state();
     let selectedFile: GitElement | undefined = $state();
     let fileElement: GitFile | undefined = $state();
 
     let repotree: GitElement | undefined = $state();
     let flattened_tree: GitElement[] | undefined = $state();
+
+    let displayTree: TreeItem | undefined = $derived(repotree? CreateTreeFromGitElement(repotree) : undefined);
+    let file_view: Tree | undefined = $state();
+    let expanded: boolean = $state(false);
+
+    
     let viz_container: HTMLDivElement | undefined = $state();
-    let width = $derived((viz_container?.clientWidth || 400));
-    let height = $derived((viz_container?.clientHeight || 400));
+    let width = $state(600);
+    let height = $state(400);
+    
     
     let margin = $state({top: 20, right: 20, bottom: 30, left: 40});
     let svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined= $state();
@@ -165,11 +177,14 @@
         if (event && event.stopPropagation) {
             event.stopPropagation();
         }
-        selectedNode = d;
-        d3_working_root = d3.hierarchy(selectedNode.data)
-        if (!d.data.is_dir) {
+
+        
+        if (!d.data.is_dir && d3_root) {
+            d3_working_root = d3.hierarchy(findElementByName(d.data.parent_name? d.data.parent_name: '') || d3_root.data);
             selectedFile = d.data;
             get_file();
+        } else {
+            d3_working_root = d;
         }
         update_graphic()
     }
@@ -183,10 +198,19 @@
         update_graphic();
     }
 
+    function updateWindow(){
+        width = viz_container?.clientWidth || 400;
+        height = viz_container?.clientHeight || 400;
+        console.log(width, height);
+        svg?.attr("width", width).attr("height", height);
+    }
+
     function update_graphic() {
         if (viz_container) {
             viz_container.innerHTML = '';
         }
+        width = viz_container?.clientWidth || 400;
+        height = viz_container?.clientHeight || 400;
         if (d3_working_root && viz_container) {
             const packLayout = d3.pack<GitElement>()
             if (d3_working_root.data.size) {
@@ -215,13 +239,13 @@
                 .on('click', on_pack_click)
                 .on('mouseover', function(event, d) {
                     d3.select(this).style('fill', 'red');
-                    svg.selectAll('text').filter(t => t === d)
+                    svg?.selectAll('text').filter(t => t === d)
                         .style('opacity', 1);
                 })
                 .on('mouseout', function(event, d) {
                     d3.select(this).style('fill', 'blue');
-                    svg.selectAll('text').filter(t => t === d)
-                        .style('opacity', t=> t.parent === packed ? 1 : 0);
+                    svg?.selectAll('text').filter(t => t === d)
+                        .style('opacity', t => t.parent === packed ? 1 : 0);
                 })
 
             svg.selectAll('text')
@@ -237,9 +261,11 @@
                 .style('fill', 'White')
                 .style('opacity', d => d.parent === packed ? 1 : 0)
                 .style('pointer-events', 'none');
-
+            
+            d3.select(window).on('resize.updatesvg', updateWindow);
 
             svg.call(zoom);
+            
         }
     }
 
@@ -292,7 +318,7 @@
         </div>
     </div>  
 
-    <div class="flex flex-col md:grid md:grid-cols-6 md:grid-rows-6 w-full grow gap-4 p-4 ">
+    <div class="flex flex-col md:grid md:grid-cols-6 md:grid-rows-6 w-full grow gap-4 p-4 md:max-h-[calc(100dvh-136px)]">
         <div id="descriptive-stats" class="md:col-span-1 md:row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
             <div class="flex flex-col">
                 <p>Average File Size: {computeAverageSize()} bytes</p>
@@ -303,9 +329,26 @@
                 <p>Smallest Directory</p>
             </div>
         </div> 
-        <div id="file-list" class="nd:col-span-1 md:row-start-3 md:row-span-4 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
-            <div class="flex flex-col">
-                <p>File List</p>
+        <div id="file-list" class="nd:col-span-1 md:row-start-3 md:row-span-4 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 flex flex-col">
+            <div class="flex flex-col grow max-h-full">
+                <h1>File List</h1>
+                <div class="flex justify-between items-center">
+                    <button onclick={()=> expanded = !expanded}>
+                        {#if expanded}
+                            Collapse all
+                        {:else}
+                            Expand all
+                        {/if}
+                    </button>
+                </div>
+                <div class="divider w-full m-0"></div>
+                {#if displayTree}
+                    <Tree tree={displayTree} classes="overflow-auto max-h-full bg-base-300 p-2 rounded-xl grow" bind:this={file_view}>
+
+                    </Tree>
+                {:else}
+                    <p>Loading...</p>
+                {/if}
             </div>
         </div>
         <div id="histogram" class="md:col-start-2 md:row-start-1 md:col-span-3 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
@@ -319,15 +362,20 @@
                 <div> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
                 <div class='grow bg-base-300 rounded-xl' bind:this={viz_container}>
                 </div>
-                
             </div>
         </div>
         <div id="file_preview" class="md:col-span-2 md:row-span-6 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 max-w-full">
             {#if fileElement}
                 <FileInfo file={fileElement}/>
             {:else}
-                <p>No file selected</p>
+                <p>No file selected.  </p>
             {/if}
         </div>
     </div>
 </div>
+
+<style>
+    h1 {
+        font-size: 1.5rem;
+    }
+</style>
