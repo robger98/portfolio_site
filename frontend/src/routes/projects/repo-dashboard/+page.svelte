@@ -420,7 +420,7 @@
                     <div class='card-title'>Repo Visualisation</div>
                     <div class="truncate text-ellipsis"> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
                 </div>
-                <div class='h-full max-h-[calc(100%-52px)] bg-base-300 rounded-xl' bind:this={viz_container} bind:clientHeight={height} bind:clientWidth={width}>
+                <div class='grow max-h-[calc(100%-52px)] bg-base-300 rounded-xl' bind:this={viz_container} bind:clientHeight={height} bind:clientWidth={width}>
                     <!-- <svg class='w-full h-full max-h-full' ></svg> -->
                 </div>
             </div>
