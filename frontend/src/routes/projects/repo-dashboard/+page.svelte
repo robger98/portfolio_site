@@ -1,5 +1,4 @@
 <script lang="ts">
-    // import client from "$lib/client/sdk.gen";
     import { 
         client, 
         getBranchesRepoAccountRepoNameBranchesGet as getBranches,
@@ -22,7 +21,6 @@
     import type { TreeItem } from "$lib/components/tree.svelte";
     import { CreateTreeFromGitElement } from "$lib/components/tree.svelte";
 	import { on } from "svelte/events";
-	// import { TEMP } from "$env/static/private";
 
     let { data }= $props();
 
@@ -39,10 +37,6 @@
 
     let selectedFile: GitElement | undefined = $state();
     let fileElement: GitFile | undefined = $state();
-
-    // let fileInfo: FileInfo | undefined = $state();
-
-    // $inspect('selectedFile', selectedFile, 'fileElement', fileElement);
 
     let repotree: GitElement | undefined = $state();
 
@@ -97,7 +91,6 @@
     let height = $state(400);
     
     let margin = $state({top: 20, right: 20, bottom: 30, left: 40});
-    // let svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined= $state();
     let d3_root: d3.HierarchyNode<GitElement> = $derived(
         repotree? d3.hierarchy<GitElement>(repotree) : d3.hierarchy<GitElement>({name: 'root', is_dir: true, children: [], size: 0, full_path: ''})
     );
@@ -113,7 +106,6 @@
 
     function computeFitScale(nodeSize: number, width: number, height: number): number {
         const maxDim = Math.min(width, height);
-        // For a node with radius = nodeSize, we ensure the diameter fits
         const out = (maxDim) / (nodeSize * 2.1);
         return out;
     }
