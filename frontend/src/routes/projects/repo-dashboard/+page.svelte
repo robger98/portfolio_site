@@ -34,8 +34,8 @@
 
     let branchesReady = $state(false);
 
-    let branches: string[] = $state(['main']);
-    let repoBranch: string = $state('main');
+    let branches: string[] = $state(['master']);
+    let repoBranch: string = $state('master');
 
     let selectedFile: GitElement | undefined = $state();
     let fileElement: GitFile | undefined = $state();
