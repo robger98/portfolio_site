@@ -3,6 +3,7 @@
 export type GitElement = {
     name?: string;
     is_dir: boolean;
+    language?: string;
     size?: number;
     full_path: string;
     children?: Array<GitElement>;

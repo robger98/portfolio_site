@@ -19,6 +19,8 @@
 	import { get } from "svelte/store";
 	import Tree from "$lib/components/tree.svelte";
     import type { TreeItem } from "$lib/components/tree.svelte";
+    import Tabs from "$lib/components/tabs.svelte";
+    import TabPanel from "$lib/components/tabPanel.svelte";
     import { CreateTreeFromGitElement } from "$lib/components/tree.svelte";
 	import { on } from "svelte/events";
 
@@ -40,7 +42,7 @@
 
     let repotree: GitElement | undefined = $state();
 
-    let flattened_tree: GitElement[] | undefined = $state();
+    let flattened_tree: GitElement[] | undefined = $derived(repotree? flattenTree(repotree) : undefined);
 
     let displayTree: TreeItem | undefined = $derived(repotree? CreateTreeFromGitElement(repotree) : undefined);
     let file_view: Tree | undefined = $state();
@@ -74,11 +76,12 @@
         if (file_view_selection && selectedFile) {
             
         }
-        svg;
+        repo_view_svg;
     });
 
     $effect(() => {
-        svg;
+        repo_view_svg;
+        pie_svg;
     });
 
     $effect(() => {
@@ -86,6 +89,106 @@
         height = viz_container?.clientHeight || 400;
     });
     
+    let pie_chart_container: HTMLDivElement | undefined = $state();
+    let pie_chart_width = $state(400);
+    let pie_chart_height = $state(400);
+
+
+    let pie_chart_file_count_data = $derived.by(() => {
+        const flattened_tree = flattenTree(d3_working_root.data)
+        if (!flattened_tree) return [];
+        const langCount = new Map();
+        for (const el of flattened_tree) {
+            if (el.is_dir) continue;
+            
+            const lang = el.language || 'Unknown';
+            langCount.set(lang, (langCount.get(lang) || 0) + 1);
+        }
+        return Array.from(langCount, ([name, value]) => ({ name, value }));
+    });
+
+    let pie_chart_file_size_data = $derived.by(()=>{
+        const flattened_tree = flattenTree(d3_working_root.data)
+        if (!flattened_tree) return [];
+        const langCount = new Map();
+        for (const el of flattened_tree) {
+            if (el.is_dir) continue;
+            const lang = el.language || 'Unknown';
+            langCount.set(lang, (langCount.get(lang) || 0) + el.size );
+        }
+        return Array.from(langCount, ([name, value]) => ({ name, value }));
+    })
+
+    $inspect(pie_chart_file_count_data, 'Pie Chart File Count Data');
+    $inspect(pie_chart_file_size_data, 'Pie Chart File Size Data');
+
+    let show_count = $state(true)
+
+    let pie_svg = $derived.by(() => {
+        if (pie_chart_container) {
+            pie_chart_container.innerHTML = '';
+        } else {
+            return
+        }
+
+        const pie = d3.pie<{name: string, value: number}>()
+            .value(d => show_count? d.value : Math.sqrt(d.value))
+            .sort((a, b) => d3.ascending(a.value, b.value));
+        
+        const arc = d3.arc<d3.PieArcDatum<{name: string, value: number}>>()
+            .innerRadius(Math.min(pie_chart_width, pie_chart_height) / 3 - 1)
+            .outerRadius(Math.min(pie_chart_width, pie_chart_height) / 2 - 10);
+        
+        
+
+        const svg = d3.select(pie_chart_container)
+            .append('svg')
+            .attr('width', pie_chart_width)
+            .attr('height', pie_chart_height)
+            .append('g')
+            .attr('transform', `translate(${pie_chart_width / 2}, ${pie_chart_height / 2})`);
+        
+        const data = show_count ? pie_chart_file_count_data : pie_chart_file_size_data;
+        const color = d3.scaleOrdinal().domain(data.map(d=> d.name)).range(d3.schemeDark2);
+        const pie_data = pie(data);
+
+        svg.selectAll('slices')
+            .data(pie_data)
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', d => color(d.data.name))
+            .attr('stroke', 'white')
+            .attr('stroke-width', '2px')
+            .style('opacity', 1)
+            .on('mouseover', function(event, d) {
+                d3.select(this).style('opacity', 0.5);
+                svg.selectAll('text').filter(t => t === d)
+                    .style('opacity', 1);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this).style('opacity', 1);
+                svg.selectAll('text').filter(t => t === d)
+                    .style('opacity', 0);
+            })
+
+        svg.selectAll('slices')
+            .data(pie_data)
+            .enter()
+            .append('text')
+            .text(function(d){ return "." + d.data.name + ": " + (show_count? d.data.value : convertBytesToHumanReadable(d.data.value))})
+            // .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";  })
+            .style("text-anchor", "middle")
+            .style("font-size", 20)
+            .style('pointer-events', 'none')
+            .style('fill', 'white')
+            .style('background-color', 'black')
+            .style('opacity', 0);
+    });
+
+    $inspect(pie_chart_file_count_data, 'Pie Chart File Count Data');
+    $inspect(pie_chart_file_size_data, 'Pie Chart File Size Data');
+
     let viz_container: HTMLDivElement | undefined = $state();
     let width = $state(400);
     let height = $state(400);
@@ -104,6 +207,8 @@
         }
     });
 
+    let activeDisplayTab: string = $state('');
+
     function computeFitScale(nodeSize: number, width: number, height: number): number {
         const maxDim = Math.min(width, height);
         const out = (maxDim) / (nodeSize * 2.1);
@@ -116,7 +221,7 @@
         return layout(d3_working_root);
     });
 
-    let svg = $derived.by(() => {
+    let repo_view_svg = $derived.by(() => {
         if (viz_container) {
             viz_container.innerHTML = '';
         } else {
@@ -230,11 +335,29 @@
         return 1;
     }
 
+    function getLargestFile(): GitElement | undefined {
+        if (repotree) {
+            const files = d3_root.descendants().filter((node) => !node.data.is_dir);
+            if (files.length > 0) {
+                return files.reduce((largest, file) => {
+                    return (file.data.size || 0) > (largest.data.size || 0) ? file : largest;
+                }).data;
+            }
+        }
+        return undefined;
+    }
+
+    function convertBytesToHumanReadable(bytes: number): string {
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes === 0) return '0 Bytes';
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return Math.round((bytes / Math.pow(1024, i))*100)/100 + ' ' + sizes[i];
+    }
+
+
     let current_request = $state();
 
     async function get_file(selected: GitElement) {
-        console.log('Getting file:', selected);
-        console.log('Current request:', current_request);
         if (selected.is_dir) {
             return undefined;
         }
@@ -317,7 +440,7 @@
         });
         if (response?.data) {
             repotree = response.data;
-            flattened_tree = flattenTree(repotree);
+            // flattened_tree = flattenTree(repotree);
         } else {
             console.error('Error getting repo:', response);
         }
@@ -339,19 +462,20 @@
         selectedFile = repotree;
         fileElement = undefined;
         file_view_selection = undefined;
-        svg;  
+        repo_view_svg;  
     }
 
     onMount(async () => {
         width = viz_container?.clientWidth || 400;
         height = viz_container?.clientHeight || 400;
         await update_data();
-        svg;
+        repo_view_svg;
         if (file_view_selection && file_view) {
             ;
         }
         
     })
+
 </script>
 
 <div id="page" class="w-full md:h-[calc(100dvh-64px)] md:max-h-[calc(100dvh-64px)] bg-base-300 flex flex-col">
@@ -385,15 +509,23 @@
 
     <div class="flex flex-col md:grid md:grid-cols-6 md:grid-rows-6 w-full grow gap-4 p-4 md:max-h-[calc(100dvh-136px)]">
         <div id="descriptive-stats" class="md:col-span-1 md:row-span-2 md:row-start-5 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
-            <div class="flex flex-col">
-                <p>Average File Size: {computeAverageSize()} bytes</p>
-                <p>Median File Size: {computeMedianSize()} bytes</p>
-                <p>Largest File</p>
-                <p>Smallest File</p>
-                <p>Largest Directory</p>
-                <p>Smallest Directory</p>
+            <div class="grid grid-cols-2 items-center gap-1">
+                <p class="text-right">Average File Size :</p> <p>{convertBytesToHumanReadable(computeAverageSize())}</p>
+                <p class="text-right">Median File Size :</p> <p>{convertBytesToHumanReadable(computeMedianSize())}</p>
+                <p class="text-right">Largest File Size :</p> <p>{convertBytesToHumanReadable(getLargestFile()?.size || 0)}</p>
             </div>
         </div> 
+        <div id="repo-viz" class="min-h-96 grow md:grow-0 md:min-h-0 md:max-h-full md:col-start-2 md:row-start-1 md:col-span-3 md:row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow">
+            <div class="card-body flex flex-col max-h-full p-4">
+                <div>
+                    <div class='card-title'>Repo Visualisation</div>
+                    <div class="truncate text-ellipsis"> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
+                </div>
+                <div class='grow max-h-[calc(100%-52px)] bg-base-300 rounded-xl' bind:this={viz_container} bind:clientHeight={height} bind:clientWidth={width}>
+                    <!-- <svg class='w-full h-full max-h-full' ></svg> -->
+                </div>
+            </div>
+        </div>
         <div id="file-list" class="nd:col-span-1 md:row-start-1 md:row-span-4 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 flex flex-col">
             <div class="flex flex-col grow max-h-full">
                 <h1>File List</h1>
@@ -410,20 +542,28 @@
             </div>
         </div>
         <div id="histogram" class="md:col-start-2 md:row-start-5 md:col-span-3 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
-            <div class="flex flex-col place-items-center md-container">
-                <h2>Full functionality currently under construction</h2>
-            </div>
-        </div>
-        <div id="repo-viz" class="min-h-96 grow md:grow-0 md:min-h-0 md:max-h-full md:col-start-2 md:row-start-1 md:col-span-3 md:row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow">
-            <div class="card-body flex flex-col max-h-full p-4">
+            <div class='h-full w-full flex flex-col'>
                 <div>
-                    <div class='card-title'>Repo Visualisation</div>
-                    <div class="truncate text-ellipsis"> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
+                    <Tabs 
+                    bind:activeTabValue={activeDisplayTab}
+                    items={['File Type Distribution', 'File Size Distribution']}/>
                 </div>
-                <div class='grow max-h-[calc(100%-52px)] bg-base-300 rounded-xl' bind:this={viz_container} bind:clientHeight={height} bind:clientWidth={width}>
-                    <!-- <svg class='w-full h-full max-h-full' ></svg> -->
-                </div>
+                <TabPanel bind:activeValue={activeDisplayTab} value={'File Type Distribution'} classes="flex grow">
+                    <!-- <h1>File Type Distribution</h1> -->
+                    <button class="btn btn-primary absolute top-15 left-4" onclick={()=>show_count = !show_count}>{show_count ? 'Show Size Distribution' : 'Show Count Distribution'}</button>
+                    <div class="w-full grow bg-base-300 max-h-full rounded-b-xl" bind:clientWidth={pie_chart_width} bind:clientHeight={pie_chart_height} bind:this={pie_chart_container}>
+                        <!-- <svg class='w-full h-full max-h-full' ></svg> -->
+                    </div>
+                </TabPanel>
             </div>
+            <!-- <TabPanel bind:activeValue={activeDisplayTab} value={'File Size Distribution'}>
+                <h1>File Size Distribution</h1>
+                <div class="w-full h-full bg-base-300 rounded-xl">
+                    <svg class='w-full h-full max-h-full' ></svg>
+                </div>
+            </TabPanel> -->
+            
+            
         </div>
         <div id="file_preview" class="md:col-span-2 md:row-span-6 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 max-w-full max-h-full">
             {#if fileElement}
@@ -439,4 +579,5 @@
     h1 {
         font-size: 1.5rem;
     }
+
 </style>

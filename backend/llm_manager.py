@@ -6,10 +6,16 @@ from rich import print
 from typing import List
 import getpass
 import os
+import json
+
 from .data_model.models import Message
 
 if "OPENAI_API_KEY" not in os.environ:
-    os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt="Enter your OpenAI API key: ")
+    try:
+        with open('_keys.json', 'r') as f:
+            os.environ["OPENAI_API_KEY"] = json.loads(f.read())["OPENAI_API_KEY"]
+    except FileNotFoundError:
+        os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt='OPENAI_API_KEY not found. Please enter it: ')
 
 llm = ChatOpenAI(
     model="gpt-4o-mini"

@@ -9,6 +9,7 @@ class Message(BaseModel):
 class GitElement(BaseModel):
     name: str = ''
     is_dir: bool
+    language: str = 'txt'
     size: int = 0
     full_path: str
     children: list[Self] = []

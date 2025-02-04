@@ -6,15 +6,29 @@ from typing import Self
 import os
 import sys
 import getpass
+import json
 
 from backend.data_model.models import GitElement, GitFile
 
 
 if "GITHUB_API_TOKEN" not in os.environ:
-    os.environ["GITHUB_API_TOKEN"] = getpass.getpass(prompt="Enter your Github API key: ")
+    try:
+        with open('_keys.json', 'r') as f:
+            os.environ["GITHUB_API_TOKEN"] = json.loads(f.read())["GITHUB_API_TOKEN"]
+    except FileNotFoundError:
+        os.environ["GITHUB_API_TOKEN"] = getpass.getpass(prompt='GITHUB_API_TOKEN not found. Please enter it: ')
 
 auth = Auth.Token(os.environ["GITHUB_API_TOKEN"])
 g = Github(auth=auth)
+
+def get_language_from_path(path: str):
+    name = path.split('/')[-1]
+    if name.startswith('.') or '.' not in path:
+        return 'txt'
+    split_name = name.split('.')
+    if len(split_name) > 1:
+        return split_name[-1]
+    return 'unknown'
 
 def get_branches(account:str, repo_name: str):
     repo = g.get_repo(f'{account}/{repo_name}')
@@ -31,11 +45,11 @@ def get_repo(account:str, repo_name: str, branch: str = 'master'):
     tree = repo.get_git_tree(branch, recursive=True)
     root = GitElement(full_path='/', name='/', is_dir=True, size=0)
     for file in tree.tree:
-        element = GitElement(is_dir=file.type == 'tree', size=file.size if file.size else 100, full_path=file.path)
+        is_dir = file.type == 'tree'
+        language = 'directory' if is_dir else get_language_from_path(file.path)
+        element = GitElement(is_dir=is_dir, language=language, size=file.size if file.size else 100, full_path=file.path)
         root.add_child(element)
     return root
-
-
 
 def get_file(account:str, repo_name: str, branch: str, path: str):
     try:
@@ -45,12 +59,7 @@ def get_file(account:str, repo_name: str, branch: str, path: str):
         return GitElement(name='Error', is_dir=False, size=0, full_path='Error', error=str(e))
     contents = repo.get_contents(path)
     langauge = 'unknown'
-    if contents.name.startswith('.') or '.' not in contents.name:
-        langauge = 'txt'
-    else:
-        split_name = contents.name.split('.')
-        if len(split_name) > 1:
-            langauge = split_name[-1]
+    langauge = get_language_from_path(contents.name)
     decoded = 'Cannot Decode File'
     try:
         decoded = contents.decoded_content.decode()
