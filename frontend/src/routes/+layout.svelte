@@ -13,7 +13,7 @@
 	// let theme_controller: HTMLInputElement | undefined = $state()
 	// let theme = $state()
 	let openDropdown: boolean = $state(false)
-  
+
 	function handleClickItem() {
 		// close it
 		openDropdown = false
@@ -60,7 +60,7 @@
 				<div class="flex mr-2">
 					<label class="swap swap-rotate self-center">
 						<!-- this hidden checkbox controls the state -->
-						<input type="checkbox" class="theme-controller hidden" value="black" />
+						<input type="checkbox" class="theme-controller hidden" value='black'/>
 						<!-- sun icon -->
 						<Sun class="swap-on fill-current text-xl"/>
 						<!-- moon icon -->

@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 
     let { items, activeTabValue = $bindable('')}: { items: string[], activeTabValue: string }= $props();
+    let count = $derived(items.length)
+    let percentage = $derived((count / 100) * 100)
     
     onMount(() => {
         if (!activeTabValue && items.length > 0){
@@ -11,11 +13,11 @@
 </script>
 
 <!-- {@render children()} -->
-<ul>
+<ul class="w-full">
   {#each items as item}
-      <li class={activeTabValue === item ? 'active' : ''}>
-        <button class="border border-b-0" onclick={()=>{activeTabValue = item}}>
-          <span>{item}</span>
+      <li class={(activeTabValue === item ? 'active text-white ' : 'text-base-content') + ' w-full md:w-fit md:rounded-t-xl'} style={(activeTabValue === item ? 'background-color:#262626' : '')}>
+        <button class="border border-b-0 w-full md:w-fit md:rounded-t-xl" onclick={()=>{activeTabValue = item}}>
+          <span class=''>{item}</span>
         </button>
       </li>
   {/each}
@@ -44,8 +46,6 @@ span {
   }
 
 li.active > button {
-    color: #495057;
-    background-color: #fff;
-    border-color: #dee2e6 #dee2e6 #fff;
+    border: none;
 }
 </style>

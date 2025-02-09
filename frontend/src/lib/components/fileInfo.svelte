@@ -7,6 +7,12 @@
         file: GitFile,
     } = $props();
 
+    function convertBytesToHumanReadable(bytes: number): string {
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes === 0) return '0 Bytes';
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return Math.round((bytes / Math.pow(1024, i))*100)/100 + ' ' + sizes[i];
+    }
     // $inspect('file', file);
 
     // $effect(() => {
@@ -21,9 +27,12 @@
 </script>
 
 <div class="flex flex-col items-center h-full">
-    <h1 class="text-2xl font-bold">{file.name}</h1>
-    <p class="text-sm text-gray-500">{file.path}</p>
-    <p class="text-sm text-gray-500">{file.size}</p>
+
+    <div class="text-center">
+        <h1 class="text-2xl font-bold">{file.name}</h1>
+        <p class="text-sm text-gray-500">{file.path}</p>
+        <p class="text-sm text-gray-500">File size: {convertBytesToHumanReadable(file.size)}</p>
+    </div>
     <div id="file-content" class="w-full grow max-h-full overflow-auto">
         {#key file.content}
             {#if file.content === "Cannot Decode File"}

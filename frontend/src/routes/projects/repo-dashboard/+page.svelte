@@ -1,4 +1,6 @@
 <script lang="ts">
+    // TODO: In severe need of commenting
+    // TODO: In severe need of refactoring
     import { 
         client, 
         getBranchesRepoAccountRepoNameBranchesGet as getBranches,
@@ -23,6 +25,7 @@
     import TabPanel from "$lib/components/tabPanel.svelte";
     import { CreateTreeFromGitElement } from "$lib/components/tree.svelte";
 	import { on } from "svelte/events";
+	import { scale } from "svelte/transition";
 
     let { data }= $props();
 
@@ -95,6 +98,7 @@
 
 
     let pie_chart_file_count_data = $derived.by(() => {
+        if (!repotree) return [];
         const flattened_tree = flattenTree(d3_working_root.data)
         if (!flattened_tree) return [];
         const langCount = new Map();
@@ -108,7 +112,8 @@
     });
 
     let pie_chart_file_size_data = $derived.by(()=>{
-        const flattened_tree = flattenTree(d3_working_root.data)
+        if (!repotree) return [];
+        const flattened_tree = flattenTree(d3_working_root.data )
         if (!flattened_tree) return [];
         const langCount = new Map();
         for (const el of flattened_tree) {
@@ -119,75 +124,11 @@
         return Array.from(langCount, ([name, value]) => ({ name, value }));
     })
 
-    $inspect(pie_chart_file_count_data, 'Pie Chart File Count Data');
-    $inspect(pie_chart_file_size_data, 'Pie Chart File Size Data');
 
-    let show_count = $state(true)
+    let activeDisplayTab: string = $state('File Distibution by Type');
+    let show_count = $derived(activeDisplayTab === 'File Distibution by Type')
 
-    let pie_svg = $derived.by(() => {
-        if (pie_chart_container) {
-            pie_chart_container.innerHTML = '';
-        } else {
-            return
-        }
-
-        const pie = d3.pie<{name: string, value: number}>()
-            .value(d => show_count? d.value : Math.sqrt(d.value))
-            .sort((a, b) => d3.ascending(a.value, b.value));
-        
-        const arc = d3.arc<d3.PieArcDatum<{name: string, value: number}>>()
-            .innerRadius(Math.min(pie_chart_width, pie_chart_height) / 3 - 1)
-            .outerRadius(Math.min(pie_chart_width, pie_chart_height) / 2 - 10);
-        
-        
-
-        const svg = d3.select(pie_chart_container)
-            .append('svg')
-            .attr('width', pie_chart_width)
-            .attr('height', pie_chart_height)
-            .append('g')
-            .attr('transform', `translate(${pie_chart_width / 2}, ${pie_chart_height / 2})`);
-        
-        const data = show_count ? pie_chart_file_count_data : pie_chart_file_size_data;
-        const color = d3.scaleOrdinal().domain(data.map(d=> d.name)).range(d3.schemeDark2);
-        const pie_data = pie(data);
-
-        svg.selectAll('slices')
-            .data(pie_data)
-            .enter()
-            .append('path')
-            .attr('d', arc)
-            .attr('fill', d => color(d.data.name))
-            .attr('stroke', 'white')
-            .attr('stroke-width', '2px')
-            .style('opacity', 1)
-            .on('mouseover', function(event, d) {
-                d3.select(this).style('opacity', 0.5);
-                svg.selectAll('text').filter(t => t === d)
-                    .style('opacity', 1);
-            })
-            .on('mouseout', function(event, d) {
-                d3.select(this).style('opacity', 1);
-                svg.selectAll('text').filter(t => t === d)
-                    .style('opacity', 0);
-            })
-
-        svg.selectAll('slices')
-            .data(pie_data)
-            .enter()
-            .append('text')
-            .text(function(d){ return "." + d.data.name + ": " + (show_count? d.data.value : convertBytesToHumanReadable(d.data.value))})
-            // .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";  })
-            .style("text-anchor", "middle")
-            .style("font-size", 20)
-            .style('pointer-events', 'none')
-            .style('fill', 'white')
-            .style('background-color', 'black')
-            .style('opacity', 0);
-    });
-
-    $inspect(pie_chart_file_count_data, 'Pie Chart File Count Data');
-    $inspect(pie_chart_file_size_data, 'Pie Chart File Size Data');
+   
 
     let viz_container: HTMLDivElement | undefined = $state();
     let width = $state(400);
@@ -207,7 +148,7 @@
         }
     });
 
-    let activeDisplayTab: string = $state('');
+    
 
     function computeFitScale(nodeSize: number, width: number, height: number): number {
         const maxDim = Math.min(width, height);
@@ -232,6 +173,8 @@
             .append('svg')
             .attr('width', width)
             .attr('height', height)
+            .style('background-color', '#262626')
+            .style('radius', '')
             .on('click', function(event, d) {
                 const parent_name = d3_working_root?.data.parent_name || '';
                 selectedFile = findElementByName(parent_name);
@@ -310,6 +253,275 @@
         return pack;
     });
 
+    let pie_svg = $derived.by(() => {
+        if (pie_chart_container) {
+            pie_chart_container.innerHTML = '';
+        } else {
+            return
+        }
+
+        const pie = d3.pie<{name: string, value: number}>()
+            .value(d => show_count? d.value : (d.value))
+            .sort((a, b) => d3.ascending(a.value, b.value));
+        
+        const arc = d3.arc<d3.PieArcDatum<{name: string, value: number}>>()
+            .innerRadius(Math.min(pie_chart_width, pie_chart_height) / 10)
+            .outerRadius(Math.min(pie_chart_width, pie_chart_height) / 2.5)
+            .padAngle(0.025);
+        
+        
+
+        const svg = d3.select(pie_chart_container)
+            .append('svg')
+            .attr('width', pie_chart_width)
+            .attr('height', pie_chart_height)
+            .style('background-color', '#262626')
+            .on('zoom', function(event, d) {
+                const {transform} = event;
+                console.log(event)
+            })
+            .append('g')
+            .attr('transform', `translate(${pie_chart_width / 2}, ${pie_chart_height / 2})`);
+        
+        const data = show_count ? pie_chart_file_count_data : pie_chart_file_size_data;
+        const color = d3.scaleOrdinal()
+            .domain(data.map(d => d.name))
+            .range(d3.schemeTableau10);
+            
+        const pie_data = pie(data);
+
+        const label_positions2 = (() => {
+            let top_left = pie_data.filter(d => (d.startAngle + d.endAngle)/2 >= Math.PI*1.5);
+            top_left.sort((a, b) => d3.ascending(a.startAngle, b.startAngle));
+            let bottom_left = pie_data.filter(d => (d.startAngle + d.endAngle)/2 >= Math.PI*1 && (d.startAngle + d.endAngle)/2 < Math.PI*1.5);
+            bottom_left.sort((a, b) => d3.descending(a.startAngle, b.startAngle));
+            let bottom_right = pie_data.filter(d => (d.startAngle + d.endAngle)/2 >= Math.PI*0.5 && (d.startAngle + d.endAngle)/2 < Math.PI*1);
+            bottom_right.sort((a, b) => d3.ascending(a.startAngle, b.startAngle));
+            let top_right = pie_data.filter(d => (d.startAngle + d.endAngle)/2 < Math.PI*0.5);
+            top_right.sort((a, b) => d3.descending(a.startAngle, b.startAngle));
+
+            const threshold = 35;
+            const padding = 10;
+            const x_padding = 10;
+            let d_y = new Map()
+            let last_y = 0;
+            for (let i = 0; i < top_left.length; i++) {
+                const d = top_left[i];
+                const angle = (d.startAngle + d.endAngle) / 2;
+                let y = Math.sin(angle-Math.PI/2) * (arc.outerRadius()(d) + padding);
+                let x = (-pie_chart_width/2)+x_padding;
+                const diff = Math.abs(y - last_y);
+                if ( !(y < last_y && diff > threshold) && i!=0) {
+                    y = last_y-(threshold);
+                }
+                d_y.set(top_left[i].data.name, [x,y]);
+                last_y = y;
+            }
+
+            for (let i = 0; i < bottom_left.length; i++) {
+                const d = bottom_left[i];
+                const angle = (d.startAngle + d.endAngle) / 2;
+                let y = Math.sin(angle-Math.PI/2) * (arc.outerRadius()(d) + padding);
+                const x = (-pie_chart_width/2)+x_padding;
+                const diff = Math.abs(y - last_y);
+                if (!(y > last_y && diff > threshold) && i!=0) {
+                   y = last_y+(threshold);
+                }
+                d_y.set(bottom_left[i].data.name, [x,y]);
+                last_y = y;
+            }
+
+            for (let i = 0; i < bottom_right.length; i++) {
+                const d = bottom_right[i];
+                const angle = (d.startAngle + d.endAngle) / 2;
+                let y = Math.sin(angle-Math.PI/2) * (arc.outerRadius()(d) + padding);
+                const x = (pie_chart_width/2)-x_padding;
+                const diff = Math.abs(y - last_y);
+                if (!(y > last_y && diff > threshold) && i!=0) {
+                     y = last_y+(threshold);
+                }
+                d_y.set(bottom_right[i].data.name, [x, y]);
+                last_y = y;
+            }
+
+            for (let i = 0; i < top_right.length; i++) {
+                const d = top_right[i];
+                const angle = (d.startAngle + d.endAngle) / 2;
+                let y = Math.sin(angle-Math.PI/2) * (arc.outerRadius()(d) + padding);
+                const x = (pie_chart_width/2)-x_padding;
+                const diff = Math.abs(y - last_y);
+                if (!(y < last_y && diff > threshold) && i!=0) {
+                    y = last_y-(threshold);
+                    
+                }
+                d_y.set(top_right[i].data.name, [x,y]);
+                last_y = y;
+            }
+
+            return d_y;
+        })();
+
+        const text_anchors = (() => {
+            let left_d = pie_data.filter(d => (d.startAngle + d.endAngle)/2 > Math.PI)
+            let right_d = pie_data.filter(d => (d.startAngle + d.endAngle)/2 < Math.PI)
+
+            let num_left = left_d.length;
+            let num_right = right_d.length;
+
+            let d_anchor = new Map()
+            for (let i = 0; i < num_left; i++) {
+                d_anchor.set(left_d[i].data.name, 'start');
+            }
+            
+            for (let i = 0; i < num_right; i++) {
+                d_anchor.set(right_d[i].data.name, 'end');
+            }
+            return d_anchor;
+        })();
+
+        svg.selectAll('slices')
+            .data(pie_data)
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', d => color(d.data.name))
+            // .attr('stroke', 'white')
+            // .attr('stroke-width', '2px')
+            .style('opacity', 1)
+            .on('mouseover', function(event, d) {
+                d3.select(this).style('opacity', 0.5);
+                svg.selectAll('text').filter(t => t === d)
+                    .style('fill', 'grey');
+                repo_view_svg?.selectAll('circle').filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'red');
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this).style('opacity', 1);
+                svg.selectAll('text').filter(t => t === d)
+                    .style('fill', 'white');
+                repo_view_svg?.selectAll('circle').filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'blue');
+            })
+            .on('click', function(event, d) {
+                repo_view_svg?.selectAll('circle')
+                    .filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'red');
+            });
+
+        function place_labels_on_edge_of_pie_window(d : d3.PieArcDatum<{name: string, value: number}>) {
+            
+        }
+
+        function position_labels_outside_slice(d: d3.PieArcDatum<{name: string, value: number}>) {
+            const angle = (d.startAngle + d.endAngle) / 2;
+            const x = Math.cos(angle-Math.PI/2) * (arc.outerRadius()(d) + 20);
+            const y = Math.sin(angle-Math.PI/2) * (arc.outerRadius()(d) + 20);
+            return `translate(${x}, ${y})`;
+        }
+
+        
+
+        svg.selectAll('polyline')
+            .data(pie_data)
+            .enter()
+            .append('polyline')
+            .attr('points', function(d) {
+                const angle = (d.startAngle + d.endAngle) / 2;
+                const y = label_positions2.get(d.data.name)[1];
+                const pad = (y/Math.sin(angle-Math.PI/2))-arc.outerRadius()(d) 
+                const centroid = arc.centroid(d);
+                let x = Math.cos(angle-Math.PI/2) * (arc.outerRadius()(d) + pad);
+                const label_x = label_positions2.get(d.data.name)[0];
+                
+
+                return [centroid, x ,y , label_x, y];
+            })
+            .attr('stroke', d => color(d.data.name))
+            .attr('stroke-width', '2px')
+            .style('fill', 'none')
+            .style('opacity', 1)
+            .on('mouseover', function(event, d) {
+                svg.selectAll('path').filter(t => t === d)
+                    .style('opacity', 0.5);
+                svg.selectAll('text').filter(t => t === d)
+                    .style('fill', 'grey');
+                repo_view_svg?.selectAll('circle').filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'red');
+            })
+            .on('mouseout', function(event, d) {
+                svg.selectAll('path').filter(t => t === d)
+                    .style('opacity', 1);
+                svg.selectAll('text').filter(t => t === d)
+                    .style('fill', 'white');
+                repo_view_svg?.selectAll('circle').filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'blue');
+            })
+            .on('click', function(event, d) {
+                repo_view_svg?.selectAll('circle')
+                    .filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'red');
+            });
+        
+        svg.selectAll('slices')
+            .data(pie_data)
+            .enter()
+            .append('text')
+            .text(function(d){ return "." + d.data.name + ": " + (show_count? d.data.value : convertBytesToHumanReadable(d.data.value))})
+            .attr('x', d=> label_positions2.get(d.data.name)[0] || 0)
+            .attr('y', d=> label_positions2.get(d.data.name)[1]-10 || 0)
+            .attr('class', 'pie-label')
+            .style("text-anchor", d => text_anchors.get(d.data.name))
+            .style("font-size", 20)
+            .style('fill', 'white')
+            .style('opacity', 1)
+            .on('mouseover', function(event, d) {
+                d3.select(this).style('fill', 'gray');
+                svg.selectAll('path').filter(t => t === d)
+                    .style('opacity', 0.5);
+                repo_view_svg?.selectAll('circle').filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'red');
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this).style('fill', 'white');
+                svg.selectAll('path').filter(t => t === d)
+                    .style('opacity', 1);
+                repo_view_svg?.selectAll('circle').filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'blue');
+            })
+            .on('click', function(event, d) {
+                repo_view_svg?.selectAll('circle')
+                    .filter(t => t.data.language === d.data.name && !t.data.is_dir)
+                    .style('fill', 'red');
+            });
+
+
+        const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0, Infinity]).on('zoom', zoomed)
+        svg.call(zoom);
+
+        function zoomed(event) {
+            const {transform} = event;
+            svg.selectAll('path').attr('transform', transform);
+            svg.selectAll('polyline').attr('transform', transform);
+            svg.selectAll('text').attr('transform', transform);
+        }
+        const padded_height = pie_chart_height - 20
+        const radius = Math.min(pie_chart_width, pie_chart_height) / 2.5
+        const max_y = Math.max(Math.max(...Array.from(label_positions2.values()).map(d => d[1])), radius);
+        const min_y = Math.min(...Array.from(label_positions2.values()).map(d => d[1]), -radius);
+        const center_y = (max_y + min_y)/2;
+        let scale_factor = 1;
+        if (padded_height < Math.abs(min_y - max_y)) {
+            scale_factor = padded_height/(Math.abs(min_y - max_y)+40);
+            
+        }
+
+        zoom.transform(svg, d3.zoomIdentity.translate(0, -center_y*scale_factor).scale(scale_factor));
+       
+
+        
+    });
+
+
     client.setConfig({baseUrl:data.API_URL});
     
     function computeAverageSize() {
@@ -348,7 +560,7 @@
     }
 
     function convertBytesToHumanReadable(bytes: number): string {
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
         if (bytes === 0) return '0 Bytes';
         const i = Math.floor(Math.log(bytes) / Math.log(1024));
         return Math.round((bytes / Math.pow(1024, i))*100)/100 + ' ' + sizes[i];
@@ -440,14 +652,12 @@
         });
         if (response?.data) {
             repotree = response.data;
-            // flattened_tree = flattenTree(repotree);
         } else {
             console.error('Error getting repo:', response);
         }
     }
 
     function disableReady() {
-        
         branchesReady = false;
     }
 
@@ -481,7 +691,7 @@
 <div id="page" class="w-full md:h-[calc(100dvh-64px)] md:max-h-[calc(100dvh-64px)] bg-base-300 flex flex-col">
     <div class="top-bar bg-base-100 text-base-content p-2 w-full flex justify-between items-center place-content-center pl-4 pr-4">
         <div id="repo-branch-selection" class="flex flex-col md:flex-row items-center md-container gap-4">
-            <h2 class="md:hidden text-center">Please note this dashboard is designed with desktops in mind</h2>
+            <h2 class="md:hidden text-center">This dashboard is designed with desktops in mind</h2>
             <p>Enter public github repo information here:</p>
             <div id="repo-info" class="flex flex-col md:flex-row items-center justify-center max-w-full">
                 <div class="flex flex-col sm:flex-row items-center w-full sm:w-fit">
@@ -495,7 +705,6 @@
             {#if branchesReady}
                 <div id="repo-info" class=" flex items-center gap-4">
                     <p>Select Branch</p>
-                        <!-- <p>Branch</p> -->
                     <select id="branch" bind:value={repoBranch} class="select select-bordered place-content-center select-sm max-w-xs text-xs" disabled={!branchesReady}>
                         {#each branches as branch}
                             <option value={branch}>{branch}</option>
@@ -509,26 +718,37 @@
 
     <div class="flex flex-col md:grid md:grid-cols-6 md:grid-rows-6 w-full grow gap-4 p-4 md:max-h-[calc(100dvh-136px)]">
         <div id="descriptive-stats" class="md:col-span-1 md:row-span-2 md:row-start-5 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
-            <div class="grid grid-cols-2 items-center gap-1">
-                <p class="text-right">Average File Size :</p> <p>{convertBytesToHumanReadable(computeAverageSize())}</p>
-                <p class="text-right">Median File Size :</p> <p>{convertBytesToHumanReadable(computeMedianSize())}</p>
-                <p class="text-right">Largest File Size :</p> <p>{convertBytesToHumanReadable(getLargestFile()?.size || 0)}</p>
+            <div class="card-body flex flex-col max-h-full p-2 gap-0">
+                <div class="card-title">Repo Summary</div>
+                <div class="divider w-full m-0"></div>
+                <div class="flex flex-col grow gap-1 bg-base-300 rounded-xl p-2 pl-4 pr-4 overflow-auto">
+                    <div class="flex w-full justify-between gap-2">
+                        <div class="">File count</div> 
+                        <div>{flattened_tree?.filter(x => !x.is_dir).length || 0}</div>
+                    </div>
+                    <div class='divider w-full m-0'></div>
+                    <div class="flex w-full justify-between gap-2">
+                        <div class="">Total Size</div> <div>{convertBytesToHumanReadable(repotree?.size || 0)}</div>
+                    </div>
+                    <div class='divider w-full m-0'></div>
+                    <div class="flex w-full justify-between gap-2">
+                        <div class="">Average File Size</div> <div>{convertBytesToHumanReadable(computeAverageSize())}</div>
+                    </div>
+                    <div class='divider w-full m-0'></div>
+                    <div class='flex w-full justify-between gap-2' >
+                        <div class="">Median File Size</div> <div>{convertBytesToHumanReadable(computeMedianSize())}</div>
+                    </div>
+                    <div class='divider w-full m-0'></div>
+                    <div class="flex w-full justify-between gap-2">
+                        <div class="">Largest File Size</div> <div>{convertBytesToHumanReadable(getLargestFile()?.size || 0)}</div>
+                    </div>
+                </div>
             </div>
+            
         </div> 
-        <div id="repo-viz" class="min-h-96 grow md:grow-0 md:min-h-0 md:max-h-full md:col-start-2 md:row-start-1 md:col-span-3 md:row-span-4 card border bg-base-100 border-base-300 rounded-2xl shadow">
-            <div class="card-body flex flex-col max-h-full p-4">
-                <div>
-                    <div class='card-title'>Repo Visualisation</div>
-                    <div class="truncate text-ellipsis"> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
-                </div>
-                <div class='grow max-h-[calc(100%-52px)] bg-base-300 rounded-xl' bind:this={viz_container} bind:clientHeight={height} bind:clientWidth={width}>
-                    <!-- <svg class='w-full h-full max-h-full' ></svg> -->
-                </div>
-            </div>
-        </div>
         <div id="file-list" class="nd:col-span-1 md:row-start-1 md:row-span-4 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 flex flex-col">
             <div class="flex flex-col grow max-h-full">
-                <h1>File List</h1>
+                <div class="card-title">File List</div>
                 <div class="divider w-full m-0"></div>
                 {#if displayTree}
                 {#key displayTree}
@@ -541,36 +761,45 @@
                 {/if}
             </div>
         </div>
-        <div id="histogram" class="md:col-start-2 md:row-start-5 md:col-span-3 row-span-2 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
-            <div class='h-full w-full flex flex-col'>
+        <div id="repo-viz" class="min-h-96 grow md:grow-0 md:min-h-0 md:max-h-full md:col-start-2 md:row-start-1 md:col-span-3 md:row-span-3 card border bg-base-100 border-base-300 rounded-2xl shadow">
+            <div class="card-body flex flex-col max-h-full p-4">
+                <div>
+                    <div class='card-title'>Repo Visualization</div>
+                    <div class="pb-2"> Click on the nodes to dive in, click outside the nodes to return to parent.</div>
+                </div>
+                <div class='flex grow min-h-96 md:min-h-0 w-full bg-base-300 max-h-full rounded-b-xl overflow-clip' bind:this={viz_container} bind:clientHeight={height} bind:clientWidth={width}>
+                </div>
+            </div>
+        </div>
+        <div id="histogram" class="md:col-start-2 md:row-start-4 md:col-span-3 row-span-3 card border border-base-300 bg-base-100 rounded-2xl shadow p-4">
+            <div class='card-body flex flex-col max-h-full p-2 gap-0'>
+                <div class='card-title'>File type summaries</div>
+                <div class="pb-2">Hover on a file type in a chart to highlight it in the repo visualization. </div>
                 <div>
                     <Tabs 
                     bind:activeTabValue={activeDisplayTab}
-                    items={['File Type Distribution', 'File Size Distribution']}/>
+                    items={['File Distibution by Type', 'File Size Distibution by Type']}/>
                 </div>
-                <TabPanel bind:activeValue={activeDisplayTab} value={'File Type Distribution'} classes="flex grow">
-                    <!-- <h1>File Type Distribution</h1> -->
-                    <button class="btn btn-primary absolute top-15 left-4" onclick={()=>show_count = !show_count}>{show_count ? 'Show Size Distribution' : 'Show Count Distribution'}</button>
-                    <div class="w-full grow bg-base-300 max-h-full rounded-b-xl" bind:clientWidth={pie_chart_width} bind:clientHeight={pie_chart_height} bind:this={pie_chart_container}>
-                        <!-- <svg class='w-full h-full max-h-full' ></svg> -->
-                    </div>
-                </TabPanel>
+                <div class="flex grow min-h-96 md:min-h-0 w-full bg-base-300 max-h-full rounded-b-xl overflow-clip" bind:clientWidth={pie_chart_width} bind:clientHeight={pie_chart_height} bind:this={pie_chart_container}>
+                </div>
+                <div class="text-xs text-gray-500 pt-2">(Note: label placement is <a href="https://en.wikipedia.org/wiki/Automatic_label_placement" class='text-blue-500'>hard</a>. I took a pretty simple approach but it might be a bit unruly on smaller screens)</div>
             </div>
-            <!-- <TabPanel bind:activeValue={activeDisplayTab} value={'File Size Distribution'}>
-                <h1>File Size Distribution</h1>
-                <div class="w-full h-full bg-base-300 rounded-xl">
-                    <svg class='w-full h-full max-h-full' ></svg>
-                </div>
-            </TabPanel> -->
             
+        <div class='pie-label'></div>
             
         </div>
         <div id="file_preview" class="md:col-span-2 md:row-span-6 card border border-base-300 bg-base-100 rounded-2xl shadow p-4 max-w-full max-h-full">
-            {#if fileElement}
-                <FileInfo file={fileElement}/>
-            {:else}
-                <p>No file selected.  </p>
-            {/if}
+            <div class="card-body flex flex-col max-h-full p-2">
+                <div class="card-title">File View</div>
+                <div class="divider w-full m-0"></div>
+                <div class="grow max-h-full overflow-hidden">
+                    {#if fileElement}
+                        <FileInfo file={fileElement}/>
+                    {:else}
+                        <p>Click on a file to view the source code.</p>
+                    {/if}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -579,5 +808,4 @@
     h1 {
         font-size: 1.5rem;
     }
-
 </style>
