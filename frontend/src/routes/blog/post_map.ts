@@ -8,5 +8,5 @@ export const posts = [
         description: 'Some words about the development of this website',
         image: '/floating_islands.jpg',
         content: Portfolio
-    }
+    },
 ]
