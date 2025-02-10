@@ -9,9 +9,7 @@
 
 
 <div class="flex justify-center md-container w-full max-w-[1280px]" bind:this={holder}>
-    <!-- <div class = "h-14"></div> -->
-        <Post width={holder?.clientWidth} height=600/>
-      
+  <Post width={holder?.clientWidth} height=600/>    
 </div>  
 
 <svelte:head>
